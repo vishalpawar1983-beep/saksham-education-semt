@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --container: 1280px;
+  }
+
+  * {
+    @apply border-line;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-surface text-ink font-sans antialiased;
+    font-feature-settings: 'ss01', 'cv01';
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display font-bold tracking-tight text-ink;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-primary-700;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #eef2f7;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #c7d2e0;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #e11d2a;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary disabled:opacity-60 disabled:pointer-events-none;
+  }
+  .btn-primary {
+    @apply btn bg-primary text-white px-7 py-3.5 shadow-glow hover:bg-primary-600 hover:-translate-y-0.5;
+  }
+  .btn-secondary {
+    @apply btn bg-secondary text-white px-7 py-3.5 shadow-[0_16px_50px_-12px_rgba(255,122,0,0.4)] hover:bg-secondary-600 hover:-translate-y-0.5;
+  }
+  .btn-outline {
+    @apply btn border-2 border-line bg-white text-ink px-7 py-3.5 hover:border-primary hover:text-primary;
+  }
+  .btn-ghost {
+    @apply btn text-primary px-4 py-2 hover:bg-primary-50;
+  }
+
+  .section {
+    @apply py-16 md:py-24;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-sm font-semibold text-primary;
+  }
+
+  .card-base {
+    @apply bg-card rounded-2xl border border-line/70 shadow-soft transition-all duration-300;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+
+  .link-underline {
+    @apply relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full;
+  }
+
+  .form-input {
+    @apply w-full rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink placeholder:text-muted/70 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
+  }
+
+  .form-label {
+    @apply mb-1.5 block text-sm font-semibold text-ink;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .blur-blob {
+    @apply pointer-events-none absolute rounded-full blur-3xl opacity-40;
+  }
+}
+
+/* Swiper overrides */
+.swiper-pagination-bullet {
+  background: #c7d2e0 !important;
+  opacity: 1 !important;
+}
+.swiper-pagination-bullet-active {
+  background: #e11d2a !important;
+  width: 24px !important;
+  border-radius: 999px !important;
+}
+.swiper-button-next,
+.swiper-button-prev {
+  color: #e11d2a !important;
+}
