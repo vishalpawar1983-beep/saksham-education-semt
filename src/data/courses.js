@@ -5,6 +5,8 @@
 // the Course Detail page always has complete content.
 // ---------------------------------------------------------------------------
 
+import { courseContentOverrides } from './courseContent';
+
 export const slugify = (str) =>
   str
     .toLowerCase()
@@ -359,47 +361,65 @@ const seeded = (str, min, max) => {
   return min + (h % (max - min + 1));
 };
 
-const buildCurriculum = (title, type) => {
+// Strip course-type prefixes to get the clean subject (e.g. "Fashion Designing").
+const subjectOf = (title) =>
+  title.replace(/^(Advance )?Diploma in |^Certif(icate|ication) in /i, '').trim();
+
+// Keyword-rich, location-aware overview for courses without a hand-written override.
+const buildOverview = (title, type, duration, categoryName, subject) =>
+  `${title} is a career-focused ${type.toLowerCase()} offered by SEMT, a leading ${categoryName.toLowerCase()} training institute in Mohali (Chandigarh Tricity), Punjab. Ideal for students after 10th and 12th as well as working professionals, this ${duration.toLowerCase()} program combines strong fundamentals with 100% practical, hands-on training in ${subject}. You learn from experienced faculty, work on live projects, and graduate job-ready with a recognised certificate and dedicated placement assistance. The ${title} course in Mohali is designed to build real workplace skills, boost your confidence, and prepare you for in-demand career opportunities across Punjab and beyond.`;
+
+const buildCurriculum = (title, type, subject) => {
   const base = [
-    `Foundations & Introduction to ${title.replace(/^(Advance )?Diploma in |^Certif(icate|ication) in /i, '')}`,
-    'Core Concepts & Industry Standards',
-    'Hands-on Practical Tools & Techniques',
-    'Real-world Projects & Case Studies',
+    `Introduction & Fundamentals of ${subject}`,
+    `Core Concepts, Tools & Industry Standards in ${subject}`,
+    'Hands-on Practical Training & Lab Sessions',
+    'Live Projects, Assignments & Real-world Case Studies',
   ];
   if (type !== 'Certificate') {
-    base.push('Advanced Specialisation Modules', 'Industry Internship & Live Project');
+    base.push(`Advanced ${subject} Specialisation Modules`, 'Industry Internship & Portfolio Building');
   }
   base.push('Soft Skills, Interview Preparation & Certification');
   return base.map((m, i) => ({
     module: `Module ${i + 1}`,
     title: m,
     topics: [
-      'Concept walkthrough & demonstrations',
-      'Guided lab / practical sessions',
-      'Assessment & doubt clearing',
+      `Step-by-step ${subject} concepts & demonstrations`,
+      'Guided hands-on lab / practical sessions',
+      'Assignments, assessment & doubt clearing',
     ],
   }));
 };
 
-const buildFaqs = (title, duration, type) => [
+const buildFaqs = (title, duration, type, categoryName, subject) => [
   {
-    q: `What is the duration of ${title}?`,
-    a: `The ${title} program runs for approximately ${duration}, including practical training and assessments.`,
+    q: `What is the duration of the ${title} course?`,
+    a: `The ${title} program at SEMT runs for approximately ${duration}, including practical training, live projects and assessments. Flexible weekday and weekend batches are available in Mohali.`,
   },
   {
-    q: 'Is this program suitable for beginners?',
+    q: `What is the ${subject} course syllabus at SEMT?`,
+    a: `The ${subject} syllabus covers everything from fundamentals to advanced, job-ready skills through 100% practical training, live projects and industry tools used by employers today.`,
+  },
+  {
+    q: `What is the career scope after ${subject} in Mohali?`,
+    a: `After completing ${title}, you can pursue rewarding roles such as ${careerFor(categoryName)
+      .slice(0, 3)
+      .join(', ')} across the Chandigarh Tricity, Punjab and beyond. SEMT also provides placement assistance.`,
+  },
+  {
+    q: `Is ${title} suitable for beginners or students after 12th?`,
     a:
       type === 'Certificate'
-        ? 'Yes. This course starts from the fundamentals and is ideal for fresh learners.'
-        : 'Yes. The curriculum is structured to take learners from basics to job-ready skills.',
+        ? 'Yes. This course starts from the basics and is ideal for fresh learners and students after 10th/12th.'
+        : 'Yes. The curriculum takes you from the fundamentals to advanced, job-ready skills — perfect for students after 10th/12th and career changers.',
   },
   {
-    q: 'Do you provide a certificate on completion?',
-    a: 'Yes, SEMT awards a recognised completion certificate along with placement assistance.',
+    q: `Does SEMT provide placement assistance after ${title}?`,
+    a: 'Yes. SEMT offers dedicated placement assistance, interview preparation and career counselling, with a strong 95% placement track record and active hiring partners.',
   },
   {
-    q: 'Are EMI / flexible fee options available?',
-    a: 'Yes, SEMT offers affordable fees with flexible installment options for eligible students.',
+    q: `Why choose SEMT for ${subject} in Mohali?`,
+    a: 'With 16+ years of experience, 5000+ students trained, experienced faculty, practical training, recognised certification and flexible fees, SEMT is a trusted choice for skill development in Mohali and Chandigarh.',
   },
 ];
 
@@ -448,9 +468,10 @@ export const courses = Object.entries(courseGroups).flatMap(([categoryName, list
     counter += 1;
     const type = inferType(title);
     const duration = durationFor(type, title);
+    const subject = subjectOf(title);
     const slug = slugify(`${title}-${category.slug}`).slice(0, 60);
     const fee = seeded(slug, 60, 240) * 100; // 6,000 - 24,000
-    return {
+    const built = {
       id: counter,
       title,
       slug,
@@ -469,7 +490,7 @@ export const courses = Object.entries(courseGroups).flatMap(([categoryName, list
         /^(Advance )?Diploma in |^Certif(icate|ication) in /i,
         ''
       )} through hands-on practical training, live projects and expert mentorship at SEMT.`,
-      overview: `${title} is a ${duration.toLowerCase()} ${type.toLowerCase()} program offered by SEMT under the ${categoryName} stream. The course blends conceptual understanding with extensive practical training so learners graduate job-ready. Designed and delivered by experienced faculty, it focuses on real-world skills, current industry tools and the soft skills employers expect.`,
+      overview: buildOverview(title, type, duration, categoryName, subject),
       eligibility:
         type === 'Advance Diploma'
           ? '10+2 pass (any stream). Basic familiarity with the subject is helpful but not mandatory.'
@@ -480,10 +501,13 @@ export const courses = Object.entries(courseGroups).flatMap(([categoryName, list
         type === 'Advance Diploma'
           ? ['10+2 from a recognised board', 'No prior experience required', 'Basic computer literacy helpful']
           : ['10th or 10+2 pass', 'No prior experience required', 'Aptitude & interest in the field'],
-      curriculum: buildCurriculum(title, type),
+      curriculum: buildCurriculum(title, type, subject),
       careerOpportunities: careerFor(categoryName),
-      faqs: buildFaqs(title, duration, type),
+      faqs: buildFaqs(title, duration, type, categoryName, subject),
     };
+    // Merge hand-written premium SEO content for top courses, when available.
+    const override = courseContentOverrides[title];
+    return override ? { ...built, ...override } : built;
   });
 });
 
