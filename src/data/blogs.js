@@ -63,11 +63,22 @@ const rawBlogs = [
   },
 ];
 
+// Topic-relevant cover image per blog (matches rawBlogs order/category).
+const ux = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=720&q=80`;
+const blogImages = [
+  ux('1454165804606-c3d57bc86b40'), // Career Guidance — choosing a diploma
+  ux('1461749280684-dccba630e2f6'), // Information Technology — IT skills
+  ux('1503676260728-1c00da094a0b'), // Teacher Training — nursery classroom
+  ux('1556761175-b413da4baf72'), // Skill Development — practical training
+  ux('1558769132-cb1aea458c5e'), // Fashion Designing
+  ux('1566073771259-6a8506099945'), // Hotel Management
+];
+
 export const blogs = rawBlogs.map((b, i) => ({
   id: i + 1,
   ...b,
   slug: slugify(b.title),
-  image: `https://picsum.photos/seed/semt-blog-${i + 1}/720/460`,
+  image: blogImages[i] || ux('1454165804606-c3d57bc86b40'),
   content: [
     `${b.excerpt}`,
     'At SEMT we believe that the right guidance at the right time can completely transform a learner’s journey. In this article we explore the topic in depth and share practical, actionable insights drawn from our years of training experience.',
